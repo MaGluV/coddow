@@ -39,7 +39,6 @@ class AC_Model:
 	def find_images(self, comics_address, data='', header='', last_link=''):
 	
 		address = "/".join((comics_address, last_link))
-		print(address)
 		page = Download(address, self.__conf["image_request_type"])
 		read = page.read_page(header, json.loads(data))
 		if read.text.count(self.__conf["error"]) > 0:
@@ -59,7 +58,6 @@ class AC_Model:
 			self.__last_link = address.split('/')[-1]
 			try:
 				address = re.findall(self.__conf["next_match"] , read.text)[0]
-				#print(address)
 			except IndexError:
 				break
 				
@@ -80,7 +78,6 @@ class AC_Model:
 		for link in self.__image:
 			image_name = link.split('/')[-1]
 			page = Download(self.__conf['pic_address'] + link, self.__conf["request_type"])
-			print(self.__conf['pic_address'] + link)
 			read = page.read_page(header)
 			with open(image_name, 'wb') as wt:
 				wt.write(read.content)
@@ -143,8 +140,3 @@ class AC_Model:
 										 "exists")
 				
 		os.chdir('../')
-		
-if __name__ == '__main__':
-	a = AC_Model("Settings1")
-	if a.find_images("https://acomics.ru/~iddqd/1") is not None:
-		print(a.get_image_list())
