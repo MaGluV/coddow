@@ -61,28 +61,32 @@ class Acrylic:
 				
 				add = input("Add comics?[yYnN]")
 				if add in 'yY':
-					name = input("Input name: ")
-					add_data = search.find(name)
-					self.__db.add_comics(config, add_data)
-					if not os.path.exists(add_data.get_name()):
-						os.mkdir(add_data.get_name())
+					names = input("Input names[name1|name2...]: ")
+					name_list = names.split('|') if names.count('|') > 0 else [names] 
+					for name in name_list:
+						add_data = search.find(name)
+						self.__db.add_comics(config, add_data)
+						if not os.path.exists(add_data.get_name()):
+							os.mkdir(add_data.get_name())
 				elif not add in 'yYnN':
 					print("Incorrect Input")
 				
 				delete = input("Delete comics?[yYnN]")
 				if delete in 'yY':
-					name = input("Input name: ")
-					del_data = self.__db.get_sorted_by_date(config)
-					del_func = lambda name: lambda x: name in x[1]
-					deleted = list(filter(del_func(name), del_data))
-					if len(deleted[0][1]) > 0: 
-						self.__db.delete_by_name(config, deleted[0][1])
-						try:	
-							shutil.rmtree(deleted[0][1])
-						except Exception as e:
-							print("Error : %s" % e)
-					else:
-						print("Not found")
+					name = input("Input names[name1|name2...]: ")
+					name_list = names.split('|') if names.count('|') > 0 else [names] 
+					for name in name_list:
+						del_data = self.__db.get_sorted_by_date(config)
+						del_func = lambda name: lambda x: name in x[1]
+						deleted = list(filter(del_func(name), del_data))
+						if len(deleted[0][1]) > 0: 
+							self.__db.delete_by_name(config, deleted[0][1])
+							try:	
+								shutil.rmtree(deleted[0][1])
+							except Exception as e:
+								print("Error : %s" % e)
+						else:
+							print("Not found")
 				elif not delete in 'yYnN':
 					print("Incorrect Input")
 					
@@ -111,7 +115,7 @@ class Acrylic:
 					name_from_db = [data[1] for data in comics_data_list]
 					print(name_from_db)
 					model = models[config_data["model"]](config)
-					names = input("Comics name[name1|name2...]:")
+					names = input("Comics names[name1|name2...]:")
 					name_list = names.split('|') if names.count('|') > 0 else [names] 
 					try:
 						for name in name_list:
