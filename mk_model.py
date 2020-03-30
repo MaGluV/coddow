@@ -37,7 +37,7 @@ class MK_Model:
 	def find_images(self, address, data='', header='', last_link=''):
 	
 		links = ['']
-		page = Download(address, self.__conf["request_type"])
+		page = Download(address, self.__conf["image_request_type"])
 		read = page.read_page(header, data)
 		if read.text.count(self.__conf["error"]) > 0:
 			print("My program : Only try to realyze the truth.\nYou : What truth?\nMy program : There is no comics...")
@@ -48,7 +48,7 @@ class MK_Model:
 			
 		links.extend(re.findall(self.__conf["links_match"], read.text))	
 		for i in range(links.index(last_link)+1, len(self.__links)-1):
-			chapter = Download(links[i], self.__conf["request_type"])
+			chapter = Download(links[i], self.__conf["image_request_type"])
 			chread = chapter.read_page(header, data)
 			self.__images[links[i].split('/')[-1]] = re.findall(self.__conf["image_match"], read.text)
 			
@@ -71,7 +71,7 @@ class MK_Model:
 			os.chdir(key)
 			for link in self.__images[key]:
 				image_name = link.split('/')[-1]
-				page = Download(self.__conf['pic_address'] + link, self.__conf["request_type"])
+				page = Download(self.__conf['pic_address'] + link, self.__conf["image_request_type"])
 				read = page.read_page(header, data)
 				with open(image_name, 'wb') as wt:
 					wt.write(read.content)
@@ -106,7 +106,7 @@ class MK_Model:
 					chapters_list.sort()
 					for image in self.__images[key]:
 						image_name = image.split('/')[-1]
-						page = Download(self.__conf['pic_address'] + link, self.__conf["request_type"])
+						page = Download(self.__conf['pic_address'] + link, self.__conf["image_request_type"])
 						read = page.read_page(header, data)
 						with open(image_name, 'wb') as wt:
 							wt.write(read.content)
