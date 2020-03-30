@@ -24,6 +24,7 @@ from comdb import DB_Comics
 import re
 import os
 import datetime
+import json
 
 class AC_Model:
 	
@@ -38,16 +39,17 @@ class AC_Model:
 	def find_images(self, comics_address, data='', header='', last_link=''):
 	
 		address = "/".join((comics_address, last_link))
-		page = Download(address, self.__conf["request_type"])
-		read = page.read_page(header, data)
+		print(address)
+		page = Download(address, self.__conf["image_request_type"])
+		read = page.read_page(header, json.loads(data))
 		if read.text.count(self.__conf["error"]) > 0:
 			print("My program : Only try to realyze the truth.\nYou : What truth?\nMy program : There is no comics...")
 			self.__db.update_status(self.__setting, comics_address, 'deleted')
 			return None
 		
 		while True:
-			page = Download(address, self.__conf["request_type"])
-			read = page.read_page(header, data)
+			page = Download(address, self.__conf["image_request_type"])
+			read = page.read_page(header, json.loads(data))
 				
 			if read.status_code != 200:
 				print("YOU! SHALL NOT! PASSED!! HTTP status code : %s" % read.status_code)
@@ -78,7 +80,8 @@ class AC_Model:
 		for link in self.__image:
 			image_name = link.split('/')[-1]
 			page = Download(self.__conf['pic_address'] + link, self.__conf["request_type"])
-			read = page.read_page(header, data)
+			print(self.__conf['pic_address'] + link)
+			read = page.read_page(header)
 			with open(image_name, 'wb') as wt:
 				wt.write(read.content)
 		
@@ -109,7 +112,7 @@ class AC_Model:
 					images_list.append(image_name)
 					images_list.sort()
 					page = Download(self.__conf['pic_address'] + link, self.__conf["request_type"])
-					read = page.read_page(header, data)
+					read = page.read_page(header, json.loads(data))
 					with open(image_name, 'wb') as wt:
 						wt.write(read.content)
 						
