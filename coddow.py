@@ -73,7 +73,10 @@ class Acrylic:
 				
 				delete = input("Delete comics?[yYnN]")
 				if delete in 'yY':
-					name = input("Input names[name1|name2...]: ")
+					comics_data_list = self.__db.get_not_deleted(config)
+					name_from_db = [data[1] for data in comics_data_list]
+					print(name_from_db)
+					names = input("Input names[name1|name2...]: ")
 					name_list = names.split('|') if names.count('|') > 0 else [names] 
 					for name in name_list:
 						del_data = self.__db.get_sorted_by_date(config)
@@ -95,11 +98,12 @@ class Acrylic:
 					comics_data_list = self.__db.get_not_deleted(config)
 					model = models[config_data["model"]](config)
 					for comics_data in comics_data_list:
+						print("Updating comics :", comics_data[1])
 						model.find_images(comics_data[2], 
 										  config_data["access_data"], 
 										  config_data["access_params"], 
 										  comics_data[5])
-						print(model.get_image_list())
+						print('Added files :', model.get_image_list())
 						model.download_images(comics_data[1], 
 											  comics_data[4],
 											  config_data["access_data"], 
@@ -119,14 +123,14 @@ class Acrylic:
 					name_list = names.split('|') if names.count('|') > 0 else [names] 
 					try:
 						for name in name_list:
-							print(name)
+							print("Rescaning comics :", name)
 							comics_data = comics_data_list[name_from_db.index(name)]
 							model.rescan(comics_data[1], 
 										 comics_data[4],
 										 comics_data[2], 
 										 config_data["access_data"], 
 										 config_data["access_params"])
-							print(model.get_image_list())
+							print('Rescaned files :', model.get_image_list())
 							model.clean_image_list()
 					except Exception as e:
 						print("Incorrect input! Error - %s" % e)
