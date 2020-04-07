@@ -37,20 +37,29 @@ class FindComics:
 		
 		address = re.findall(self.__parameters["address_match"], text)
 		name = re.findall(self.__parameters["name_match"], text)
-		rating = re.findall(self.__parameters["rating_match"], text)
+		if self.__parameters["rating_match"] != 'NONE':
+			rating = re.findall(self.__parameters["rating_match"], text)
+		else:
+			rating = ['NONE' for i in range(len(name))]
 		pages = re.findall(self.__parameters["pages_match"], text)
 		description = re.findall(self.__parameters["description_match"], text)
 			
 		return name, address, rating, pages, description
+		
+	def __make_json(self, text):
+		try:
+			return json.loads(text)
+		except Exception:
+			return text 
 
 	def find(self, name):
-		skip = 0
-		url = self.__parameters["main_url"]
+		skip = int(self.__parameters["start_skip"])
+		url = self.__parameters["main_url"] + self.__parameters["skip_message"] % str(skip) if skip > 0 else self.__parameters["main_url"]
 		
 		while True:
 		
 			r = Download(url, self.__parameters["request_type"])
-			founded = self.__data_parse(r.read_page(json.loads(self.__parameters["parameters"])).text)
+			founded = self.__data_parse(r.read_page(self.__make_json(self.__parameters["parameters"])).text)
 			
 			ind = -1
 			for word in founded[0]:
@@ -82,17 +91,19 @@ class FindComics:
 		
 	def list(self):
 	
-		skip = 0
+		skip = int(self.__parameters["start_skip"])
 		
 		while True:
-			skip_pages = input("Print %s pages? [yY/nN]" % self.__parameters["skip"])
+			skip_pages = input("Print %s pages? [yYnN]" % self.__parameters["skip"])
 			
 			if skip_pages in 'yY':
 				url = self.__parameters["main_url"] + self.__parameters["skip_message"] % str(skip) if skip > 0 else self.__parameters["main_url"]
 				r = Download(url, self.__parameters["request_type"])
-				name, address, rating, pages, description = self.__data_parse(r.read_page(json.loads(self.__parameters["parameters"])).text)
+				name, address, rating, pages, description = self.__data_parse(r.read_page(self.__make_json(self.__parameters["parameters"])).text)
 				
 				for n,a,r,p,d in zip(name, address, rating, pages, description):
+					if d[0:2] == self.__parameters["ignore_text"]:
+						d = ''
 					print("""name = %s\naddress = %s\nrating = %s\npages = %s\ndescription = %s\n\n""" % (n,a,r,p,d))
 					
 				skip += int(self.__parameters["skip"])
