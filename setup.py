@@ -22,7 +22,7 @@ if not os.path.exists(settings_path):
 	os.mkdir(settings_path)
 	os.mkdir(settings_path + '/db')
 	shutil.copytree('coddow/settings', settings_path + '/settings')
-	cmd = 'chmod 777 %s' % settings_path
+	cmd = 'chmod -R 777 %s' % settings_path
 	ps = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
 	ps.communicate()
 	config = RCP()
