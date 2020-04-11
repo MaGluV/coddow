@@ -1,2 +1,2 @@
 #!/bin/sh
-python3 /usr/local/lib/python3.5/dist-packages/coddow/coddow.py
+python3 /usr/local/lib/python3.*/dist-packages/coddow/coddow.py
